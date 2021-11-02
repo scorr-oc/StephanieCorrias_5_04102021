@@ -9,7 +9,7 @@ fetch(`http://localhost:3000/api/products/${urlParams}`)
      return response.json()
     })
     .then((product) => {
-
+        console.log(product)
         // insertion de la photo du produit
         let imgProduct = document.createElement('img')
         imgProduct.src = `${product.imageUrl}`
@@ -34,24 +34,69 @@ fetch(`http://localhost:3000/api/products/${urlParams}`)
             colorMenu.innerText = colorProduct
             document.getElementById('colors').appendChild(colorMenu)  
         })
-
-        // --------Ajoût des produits dans le panier----------
-
-        // récuperation des valeurs du panier
-        var colorProduct = document.getElementById('colors').value
-        console.log(colorProduct)
-        var quantProduct = document.getElementById('quantity').value
-        console.log(quantProduct)
-        // création du panier
-        var cart = [urlParams,colorProduct,quantProduct]
-        console.log(cart)
-
-        // ajoût du produit dans le panier au clic
+ 
+       
+        // -------ajoût du produit dans le panier au clic --------
+        
         let button = document.getElementById('addToCart')
 
+       
         button.addEventListener('click',function(){
+            // récuperation des valeurs du panier
+            let colorProduct = document.getElementById('colors').value
+            let quantProduct = document.getElementById('quantity').value
+            let productCart = {
+                id : urlParams,
+                quantity : parseInt(quantProduct),
+                color : colorProduct,
+            }   
+           console.log(productCart)
+            console.log(colorProduct)
+            // stockage des données du panier dans le localstorage
 
+            let cartLocal = JSON.parse(localStorage.getItem("product"))
+            console.log(cartLocal)
+
+            // fonction pour ajouter les produits dans cartLocal et les envoyer dans le localStorage en JSON
+            let addToCart = () => {
+                cartLocal.push(productCart);
+                localStorage.setItem("product",JSON.stringify(cartLocal));
+            
+            }
+            
+        
+            // S'il y a des produits dans le localStorage
+            if(cartLocal){
+                
+                
+                // s'il le produit est dans le panier
+                
+            //     if() {
+            // //         // on incrémente la quantité
+            //         console.log(ok)
+     
+            //     }
+            // //     // si le produit n'est pas dans le panier 
+                // else {
+                addToCart()
+                console.log(cartLocal)
+                // }
+
+            }
+            // s'il n'y en a pas 
+            else {
+                    cartLocal = []
+                    addToCart()
+            }
         })
+
+    
+        
+
+
+     
+    
+        
 
     })
     .catch(erreur =>{
