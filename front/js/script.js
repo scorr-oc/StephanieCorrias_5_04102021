@@ -3,7 +3,6 @@ fetch("http://localhost:3000/api/products")
      return response.json()
     })
     .then((products) => {
-        console.log(products)
         // insertion des produits dans la page d'accueil
         for (let product of products){
 
@@ -28,7 +27,6 @@ fetch("http://localhost:3000/api/products")
 
             let p = document.createElement('p')
             p.classList.add('productDescription')
-            console.log(p)
             p.innerHTML = `${product.description}`
             article.appendChild(p)
         }
