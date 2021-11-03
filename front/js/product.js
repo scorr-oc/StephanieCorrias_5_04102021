@@ -9,7 +9,7 @@ fetch(`http://localhost:3000/api/products/${urlParams}`)
      return response.json()
     })
     .then((product) => {
-        console.log(product)
+    
         // insertion de la photo du produit
         let imgProduct = document.createElement('img')
         imgProduct.src = `${product.imageUrl}`
@@ -42,62 +42,50 @@ fetch(`http://localhost:3000/api/products/${urlParams}`)
 
        
         button.addEventListener('click',function(){
-            // récuperation des valeurs du panier
-            let colorProduct = document.getElementById('colors').value
-            let quantProduct = document.getElementById('quantity').value
+            // récuperation des valeurs choisies par l'utilisateur lors du clic
+            const idProduct = urlParams
+            const colorProduct = document.getElementById('colors').value
+            const quantProduct = document.getElementById('quantity').value
             let productCart = {
-                id : urlParams,
-                quantity : parseInt(quantProduct),
+                id : idProduct,
+                quantity : quantProduct,
                 color : colorProduct,
             }   
-           console.log(productCart)
-            console.log(colorProduct)
-            // stockage des données du panier dans le localstorage
+           
 
-            let cartLocal = JSON.parse(localStorage.getItem("product"))
-            console.log(cartLocal)
+            // récupération du panier dans le localStorage
 
-            // fonction pour ajouter les produits dans cartLocal et les envoyer dans le localStorage en JSON
-            let addToCart = () => {
-                cartLocal.push(productCart);
-                localStorage.setItem("product",JSON.stringify(cartLocal));
-            
-            }
-            
+            let cartLocal = JSON.parse(localStorage.getItem("cart"))
         
-            // S'il y a des produits dans le localStorage
+            // 1 - Vérifier que le panier ne soit pas vide
             if(cartLocal){
+                let cartUpdate = []
+                let isExist = false;
                 
-                
-                // s'il le produit est dans le panier
-                
-            //     if() {
-            // //         // on incrémente la quantité
-            //         console.log(ok)
-     
-            //     }
-            // //     // si le produit n'est pas dans le panier 
-                // else {
-                addToCart()
-                console.log(cartLocal)
-                // }
+                // 2- Rechercher si l'ID du produit est dans le panier
+                cartLocal.forEach(item => {
+                    if (item.id === idProduct && item.color === colorProduct){
+                        item.quantity = Number(item.quantity) + Number(quantProduct)
+                        isExist = true
+                    }
+                    // on met le panier à jour avec la nouvelle quantité
+                    cartUpdate.push(item);
+                })
 
+                // 3 - Ajout du produit dans le panier s'il ne s'y trouve pas
+                if(!isExist) {
+                    cartUpdate.push(productCart)
+                }
+
+                localStorage.setItem("cart", JSON.stringify(cartUpdate))
             }
-            // s'il n'y en a pas 
+            // si le panier est vide
             else {
-                    cartLocal = []
-                    addToCart()
+                    cartLocal = [productCart]
+                    localStorage.setItem("cart",JSON.stringify(cartLocal))
+                    
             }
         })
-
-    
-        
-
-
-     
-    
-        
-
     })
     .catch(erreur =>{
         console.log(erreur)
