@@ -1,8 +1,3 @@
-// récupération du panier dans le localStorage
-
-let cartLocal = JSON.parse(localStorage.getItem("cart"))
-
-
 
 // ---------- Création et insertion des éléments dans la page panier -----------------
 
@@ -12,14 +7,17 @@ fetch("http://localhost:3000/api/products")
     })
     .then((products) => {
 
+        // récupération du panier dans le localStorage
+
+        let cartLocal = JSON.parse(localStorage.getItem("cart"))
+       
+       
         cartLocal.forEach(item => {
         
         let idCart = item.id
-        console.log(idCart)
         let quantityCart = item.quantity
-        console.log(quantityCart)
         let colorCart = item.color
-        console.log(colorCart)
+    
     
         // for ( let product of products) {
         //     let idProduct = `./product.html?id=${product._id}`
@@ -42,7 +40,7 @@ fetch("http://localhost:3000/api/products")
         idItem.appendChild(divImg)
         console.log(divImg)
 
-       
+        // Insertion de l'image
         // let img = document.createElement('img')
         // img.src =  `../products/${products.imageUrl}`
         // img.alt =  `${products.imageUrl}`
@@ -58,11 +56,13 @@ fetch("http://localhost:3000/api/products")
         divTitle.className = 'cart__item__content__titlePrice'
         divContent.appendChild(divTitle)
         console.log(divTitle)
-
+        
+        // Insertion du nom du produit
         let h2 = document.createElement('h2')
         // h2.innerHTML = product.title
         divTitle.appendChild(h2)  
 
+        // Insertion du prix du produit
         let price = document.createElement('p')
         // price.innerHTML = product.price
         divTitle.appendChild(price) 
@@ -81,6 +81,7 @@ fetch("http://localhost:3000/api/products")
         quantity.innerHTML = "Qté : "
         divQuantity.appendChild(quantity)
 
+        // Insertion de la quantité
         let inputQuantity = document.createElement('input')
         inputQuantity.type = "number"
         inputQuantity.className = "itemQuantity"
@@ -100,6 +101,14 @@ fetch("http://localhost:3000/api/products")
         pDelete.className = 'deleteItem'
         pDelete.innerHTML = 'Supprimer'
         divDelete.appendChild(pDelete)
+
+        // Calcul de la quantité totale et du prix total
+        // document.getElementById("totalQuantity").innerHTML =
+        // document.getElementById("totalPrice").innerHTML =
+
+
+        // message d'erreur formulaire
+        document.getElementById("firstNameErrorMsg").innerHTML = "Ceci est un message d'erreur"
             
         });
 
