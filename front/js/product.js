@@ -36,19 +36,25 @@ fetch(`http://localhost:3000/api/products/${urlParams}`)
         })
  
        
+        
+        
         // -------ajoût du produit dans le panier au clic --------
         
         let button = document.getElementById('addToCart')
-
+        // Aller à la page panier lors du clic
+        button.innerHTML = `<a href="./cart.html">Ajouter au panier </a>` 
+        
+          
        
         button.addEventListener('click',function(){
+        
             // récuperation des valeurs choisies par l'utilisateur lors du clic
             const idProduct = urlParams
             const colorProduct = document.getElementById('colors').value
             const quantProduct = document.getElementById('quantity').value
             let productCart = {
                 id : idProduct,
-                quantity : quantProduct,
+                quantity : Number(quantProduct),
                 color : colorProduct,
             }   
            
@@ -70,21 +76,22 @@ fetch(`http://localhost:3000/api/products/${urlParams}`)
                     }
                     // on met le panier à jour avec la nouvelle quantité
                     cartUpdate.push(item);
-                })
+                    })
 
-                // 3 - Ajout du produit dans le panier s'il ne s'y trouve pas
-                if(!isExist) {
-                    cartUpdate.push(productCart)
+                    // 3 - Ajout du produit dans le panier s'il ne s'y trouve pas
+                    if(!isExist) {
+                        cartUpdate.push(productCart)
+                    }
+                    localStorage.setItem("cart", JSON.stringify(cartUpdate))
                 }
-
-                localStorage.setItem("cart", JSON.stringify(cartUpdate))
-            }
             // si le panier est vide
             else {
                     cartLocal = [productCart]
                     localStorage.setItem("cart",JSON.stringify(cartLocal))
                     
             }
+            
+            
         })
     })
     .catch(erreur =>{
