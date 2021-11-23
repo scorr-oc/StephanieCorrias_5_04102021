@@ -1,20 +1,17 @@
  // récupération du panier dans le localStorage
-
 let cartLocal = JSON.parse(localStorage.getItem("cart"))
 
 // Création des variables pour la somme des articles et le calcul du prix total
-
 let totalProduct = 0
 let totalPrice = 0
 
 // Vérifier si le panier est vide
-
 if(cartLocal === null) {
     document.querySelector('h1').innerText = "VOTRE PANIER EST VIDE"
     alert("Le panier est vide")
 } 
-// Si le panier n'est pas vide
 
+// Si le panier n'est pas vide
 else {
 // ---------- Création, insertion et modificataion des éléments dans la page panier ----------------- 
 
@@ -56,7 +53,10 @@ else {
                 let priceItem = item.quantity * product.price
                 price.innerHTML = `${priceItem} €`
                 divTitle.appendChild(price) 
+                function cartPrice(){
                 totalPrice += priceItem
+                }
+                cartPrice()
         
                 let divSettings = document.createElement('div')
                 divSettings.className = 'cart__item__content__settings'
@@ -91,16 +91,71 @@ else {
                 pDelete.className = 'deleteItem'
                 pDelete.innerHTML = 'Supprimer'
                 divDelete.appendChild(pDelete)
-
+                
+                console.log(cartLocal)
+                console.log(pDelete)
+                
                 // Insertion de la quantité totale et du prix total
-
+                function cartTotal(){
                 document.getElementById("totalQuantity").innerText = totalProduct
                 document.getElementById("totalPrice").innerText = totalPrice
-        })        
+                }
+                cartTotal()
+
+                // ------ changement de quantité d'un produit du panier ---
+                inputQuantity.addEventListener('change',(e)=> {
+                    cartLocal.forEach (item => {
+                        // Répération de la valeur modifiée
+                        const quantityChange = Number(inputQuantity.value)
+                        console.log(quantityChange)
+
+                        // Mise à jour du prix avec la nouvelle quantité
+                        priceItem= quantityChange * product.price
+                        console.log(priceItem)
+                        price.innerHTML = `${priceItem} €`
+
+                        // mise à jour du panier avec les nouvelles données
+
+
+                        
+                        // Mise à  jour totale des prix et quantité
+        
+                        console.log(cartLocal)
+                    })
+
+                })
+
+
+
+                // ------ suppression d'un élément du panier ------
+               
+                pDelete.addEventListener('click',(e) => {
+         
+                    cartLocal.forEach ( item => {
+                        // Récupération de l'élément parent à supprimer
+                        let parent = e.target.closest('[data-id]')
+                        //   récupération de l'id du produit à supprimer
+                        let idDelete = parent.dataset.id
+
+                        // Suppression du produit du localStorage
+                        const cartUpdate = cartLocal.filter((item) => item.id !== idDelete)
+                        localStorage.setItem('cart', JSON.stringify(cartUpdate))
+                        
+                        // Suppression du produit dans le DOM
+                        parent.remove()
+                        alert('Votre panier est vide')
+
+                        // Je récupère mon panier mis à jour
+                        let newCart = JSON.parse(localStorage.getItem("cart"))
+                        location.reload()
+                        
+                    })    
+                })
+            })        
         .catch((erreur) =>{
             console.log(erreur)
-            })        
-    });
+        })        
+    })
 }
 
 
