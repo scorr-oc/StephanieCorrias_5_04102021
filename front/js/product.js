@@ -1,5 +1,4 @@
 // récupération de l'id du produit à afficher
-
 const urlParams = new URLSearchParams(location.search).get('id')
 
 // ----- Insertion du produit et de ses détails dans la page produit----
@@ -34,19 +33,12 @@ fetch(`http://localhost:3000/api/products/${urlParams}`)
             colorMenu.innerText = colorProduct
             document.getElementById('colors').appendChild(colorMenu)  
         })
- 
-       
-        
-        
+
         // -------ajoût du produit dans le panier au clic --------
         
         let button = document.getElementById('addToCart')
-        // Aller à la page panier lors du clic
-        button.innerHTML = `<a href="./cart.html">Ajouter au panier </a>` 
-        
-          
        
-        button.addEventListener('click',function(){
+        button.addEventListener('click',() => {
         
             // récuperation des valeurs choisies par l'utilisateur lors du clic
             const idProduct = urlParams
@@ -57,12 +49,10 @@ fetch(`http://localhost:3000/api/products/${urlParams}`)
                 quantity : Number(quantProduct),
                 color : colorProduct,
             }   
-           
 
             // récupération du panier dans le localStorage
-
             let cartLocal = JSON.parse(localStorage.getItem("cart"))
-        
+
             // 1 - Vérifier que le panier ne soit pas vide
             if(cartLocal){
                 let cartUpdate = []
@@ -83,15 +73,18 @@ fetch(`http://localhost:3000/api/products/${urlParams}`)
                         cartUpdate.push(productCart)
                     }
                     localStorage.setItem("cart", JSON.stringify(cartUpdate))
-                }
+               
             // si le panier est vide
+
+            } 
             else {
                     cartLocal = [productCart]
                     localStorage.setItem("cart",JSON.stringify(cartLocal))
-                    
             }
             
-            
+             // Aller à la page panier lors du clic
+            location.href = "./cart.html"
+                       
         })
     })
     .catch(erreur =>{
