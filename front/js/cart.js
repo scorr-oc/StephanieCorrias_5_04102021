@@ -230,11 +230,10 @@ button.addEventListener('click', () => {
             prénom : document.getElementById('firstName').value,
             nom : document.getElementById('lastName').value,
             adresse : document.getElementById('address').value,
-            ville : document.getElementById('ville').value,
-            email : document.getElementById('email').value
-            
+            ville : document.getElementById('city').value,
+            email : document.getElementById('email').value  
         }
-        
+    console.log(contact)    
    
 })
     
