@@ -5,8 +5,17 @@ let cartLocal = JSON.parse(localStorage.getItem("cart"))
 let totalProduct = 0
 let totalPrice = 0
 
+// Fonction pour le calcul du panier
+
+function cartTotal(productQuantity , priceItem){
+    totalProduct += productQuantity
+    totalPrice += priceItem
+    document.getElementById("totalQuantity").innerText = totalProduct
+    document.getElementById("totalPrice").innerText = totalPrice
+    }
+
 // Vérifier si le panier est vide
-if(cartLocal === null) {
+if(cartLocal === null || cartLocal.lenght === 0) {
     document.querySelector('h1').innerText = "VOTRE PANIER EST VIDE"
     alert("Le panier est vide")
 } 
@@ -53,16 +62,11 @@ else {
                 let priceItem = item.quantity * product.price
                 price.innerHTML = `${priceItem} €`
                 divTitle.appendChild(price) 
-                function cartPrice(){
-                totalPrice += priceItem
-                }
-                cartPrice()
-        
+                
                 let divSettings = document.createElement('div')
                 divSettings.className = 'cart__item__content__settings'
                 divContent.appendChild(divSettings)
-                
-                
+                                
                 let divQuantity = document.createElement('div')
                 divQuantity.className = 'cart__item__content__settings__quantity'
                 divSettings.appendChild(divQuantity)
@@ -81,7 +85,6 @@ else {
                 inputQuantity.value = item.quantity
                 divQuantity.appendChild(inputQuantity)
                 let productQuantity = Number(inputQuantity.value)
-                totalProduct += productQuantity
                 
                 let divDelete = document.createElement('div')
                 divDelete.className = 'cart__item__content__settings__delete'
@@ -91,46 +94,32 @@ else {
                 pDelete.className = 'deleteItem'
                 pDelete.innerHTML = 'Supprimer'
                 divDelete.appendChild(pDelete)
-                
-                console.log(cartLocal)
-                console.log(pDelete)
-                
+                      
                 // Insertion de la quantité totale et du prix total
-                function cartTotal(){
-                document.getElementById("totalQuantity").innerText = totalProduct
-                document.getElementById("totalPrice").innerText = totalPrice
-                }
-                cartTotal()
+                
+                cartTotal(productQuantity , priceItem)
 
                 // ------ changement de quantité d'un produit du panier ---
+
                 inputQuantity.addEventListener('change',(e)=> {
                     cartLocal.forEach (item => {
-                        // Répération de la valeur modifiée
-                        const quantityChange = Number(inputQuantity.value)
-                        console.log(quantityChange)
-
-                        // Mise à jour du prix avec la nouvelle quantité
-                        priceItem= quantityChange * product.price
-                        console.log(priceItem)
-                        price.innerHTML = `${priceItem} €`
-
-                        // mise à jour du panier avec les nouvelles données
-
-
+                        // Récupération de l'élément parent à supprimer
+                        let parent = e.target.closest('[data-id]')
+                        //   récupération de l'id du produit à supprimer
+                        let idUpdate = parent.dataset.id
                         
-                        // Mise à  jour totale des prix et quantité
-        
-                        console.log(cartLocal)
+                        if(item.id === idUpdate) {
+                            item.quantity = e.target.value
+                        }
                     })
-
+                     
+                    localStorage.setItem('cart', JSON.stringify(cartLocal))
+                    location.reload()
                 })
-
-
 
                 // ------ suppression d'un élément du panier ------
                
-                pDelete.addEventListener('click',(e) => {
-         
+                pDelete.addEventListener('click',(e) => {  
                     cartLocal.forEach ( item => {
                         // Récupération de l'élément parent à supprimer
                         let parent = e.target.closest('[data-id]')
@@ -143,12 +132,9 @@ else {
                         
                         // Suppression du produit dans le DOM
                         parent.remove()
-                        alert('Votre panier est vide')
-
-                        // Je récupère mon panier mis à jour
-                        let newCart = JSON.parse(localStorage.getItem("cart"))
-                        location.reload()
                         
+                        // Rafraîchissment de la page   
+                        location.reload()
                     })    
                 })
             })        
@@ -158,8 +144,105 @@ else {
     })
 }
 
+// --- RECUPERATION ET VALIDATION DES DONNEES DU FORMULAIRE ---
 
-// message d'erreur formulaire
-// document.getElementById("firstNameErrorMsg").innerHTML = "Ceci est un message d'erreur"
+// Récupération du formulaire
+
+let form = document.querySelector('.cart__order__form')
+
+// Fonction de validation des noms
+const validName = (inputName => {
+    let nameRegExp = /[0-9]/
+    let errorMsg = inputName.nextElementSibling
+
+    if (inputName.value.match(nameRegExp)){
+        errorMsg.innerHTML = "Le format n'est pas valide - Veuillez utiliser des lettres"    
+        return false
+    } else if (inputName.value === "") {
+        errorMsg.innerHTML = "Merci de remplir ce champ"
+        return false
+    } else {
+        errorMsg.innerHTML = " "
+        return true
+    }
+ })
+
+//  Fonction de la validation de l'e-mail
+
+ const validEmail = (inputEmail => {
+    let emailRegExp = new RegExp('^[a-zA-Z0-9.-_]+[@]{1}[a-zA-Z0-9.-_]+[.]{1}[a-z]{2,10}$', 'g')
+    let errorEmail = document.getElementById('emailErrorMsg')
+
+    if(emailRegExp.test(inputEmail.value)){
+        errorEmail.innerHTML = " "
+        return true
+    } else {
+        if(inputEmail.value === ""){
+            errorEmail.innerHTML = 'Merci de remplir ce champ' 
+        } else {  
+        errorEmail.innerHTML = 'Email non valide'
+        }
+
+        return false
+    }
+})
+console.log(form.value)
+
+
+// Ecoute de la modification du prénom
+form.firstName.addEventListener('change', () => {
+    validName(form.firstName)
+ })
+
+ // Ecoute de la modification du nom
+form.lastName.addEventListener('change', () => {
+    validName(form.lastName)
+ })
+
+ // Ecoute de la modification de l'adresse
+ form.address.addEventListener('change', () => {
+    if (form.address.value === "") {
+    document.getElementById('addressErrorMsg').innerHTML = "Merci de remplir ce champ"
+    
+    } else {
+    document.getElementById('addressErrorMsg').innerHTML = " "
+
+    }
+ })
+
+ // Ecoute de la modification du nom
+form.city.addEventListener('change', () => {
+    validName(form.city)
+ })
+
+ // Ecoute de la modification de l'email
+form.email.addEventListener('change', () => {
+    validEmail(form.email)
+ })
+
+//  Récupération des données du formulaire sous forme d'objet
+
+let button = document.getElementById('order')
+
+button.addEventListener('click', () => {
+
+        let contact = {
+            prénom : document.getElementById('firstName').value,
+            nom : document.getElementById('lastName').value,
+            adresse : document.getElementById('address').value,
+            ville : document.getElementById('ville').value,
+            email : document.getElementById('email').value
+            
+        }
+        
+   
+})
+    
+
+ 
+
+
+
+
             
  
