@@ -15,7 +15,7 @@ function cartTotal(productQuantity , priceItem){
     }
 
 // Vérifier si le panier est vide
-if(cartLocal === null || cartLocal.lenght === 0) {
+if(cartLocal === null || cartLocal.length === 0) {
     document.querySelector('h1').innerText = "VOTRE PANIER EST VIDE"
     alert("Le panier est vide")
 } 
@@ -186,57 +186,82 @@ const validName = (inputName => {
         return false
     }
 })
-console.log(form.value)
+
+form.addEventListener('submit', (e) => {
+
+    e.preventDefault()
+    // Ecoute de la modification du prénom
+    form.firstName.addEventListener('change', () => {
+        validName(this.firstName)
+    })
+
+    // Ecoute de la modification du nom
+    form.lastName.addEventListener('change', () => {
+        validName(this.lastName)
+    })
+
+    // Ecoute de la modification de l'adresse
+    form.address.addEventListener('change', () => {
+        if (form.address.value === "") {
+        document.getElementById('addressErrorMsg').innerHTML = "Merci de remplir ce champ"
+        
+        } else {
+        document.getElementById('addressErrorMsg').innerHTML = " "
+
+        }
+    })
+
+    // Ecoute de la modification du nom
+    form.city.addEventListener('change', () => {
+        validName(this.city)
+    })
+
+    // Ecoute de la modification de l'email
+    form.email.addEventListener('change', () => {
+        validEmail(this.email)
+    })
+
+    //  Récupération des données du formulaire sous forme d'objet
 
 
-// Ecoute de la modification du prénom
-form.firstName.addEventListener('change', () => {
-    validName(form.firstName)
- })
-
- // Ecoute de la modification du nom
-form.lastName.addEventListener('change', () => {
-    validName(form.lastName)
- })
-
- // Ecoute de la modification de l'adresse
- form.address.addEventListener('change', () => {
-    if (form.address.value === "") {
-    document.getElementById('addressErrorMsg').innerHTML = "Merci de remplir ce champ"
-    
-    } else {
-    document.getElementById('addressErrorMsg').innerHTML = " "
-
-    }
- })
-
- // Ecoute de la modification du nom
-form.city.addEventListener('change', () => {
-    validName(form.city)
- })
-
- // Ecoute de la modification de l'email
-form.email.addEventListener('change', () => {
-    validEmail(form.email)
- })
-
-//  Récupération des données du formulaire sous forme d'objet
-
-let button = document.getElementById('order')
-
-button.addEventListener('click', () => {
+    document.getElementById('order').addEventListener('click', (e) => {
 
         let contact = {
-            prénom : document.getElementById('firstName').value,
-            nom : document.getElementById('lastName').value,
-            adresse : document.getElementById('address').value,
-            ville : document.getElementById('city').value,
+            firstName : document.getElementById('firstName').value,
+            lastName : document.getElementById('lastName').value,
+            address : document.getElementById('address').value,
+            city : document.getElementById('city').value,
             email : document.getElementById('email').value  
         }
-    console.log(contact)    
-   
+        let products = []
+        cartLocal.forEach(item =>{
+            products.push(item.id)
+        })
+
+        const order = {
+            contact,
+            products,
+        }
+        console.log(order)
+        
+        // Envoi des données de order à l'API
+        fetch("http://localhost:3000/api/products/order",{
+            method: 'POST',
+            headers: {
+                'Accept': 'application/json',
+                'Content-Type':'application/json'
+            },
+            body: JSON.stringify(order)
+        })
+        .then(response => response.json())
+        .then(order =>location.href = `./confirmation.html?id=${order.orderId}`)
+        .catch(error => alert("Erreur : " + error));
+
+    })
+      
 })
-    
+
+
 
  
 
