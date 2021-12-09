@@ -3,7 +3,9 @@ fetch("http://localhost:3000/api/products")
      return response.json()
     })
     .then((products) => {
-        // insertion des produits dans la page d'accueil
+        /*
+        insertion des produits dans la page d'accueil
+        */
         for (let product of products){
 
             let a = document.createElement('a')

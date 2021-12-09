@@ -1,12 +1,15 @@
- // récupération du panier dans le localStorage
+/*
+Récupération du panier dans le localStorage
+*/
 let cartLocal = JSON.parse(localStorage.getItem("cart"))
-
-// Création des variables pour la somme des articles et le calcul du prix total
+/*
+Création des variables pour la somme des articles et le calcul du prix total
+*/
 let totalProduct = 0
 let totalPrice = 0
-
-// Fonction pour le calcul du panier
-
+/*
+Fonction pour le calcul du panier
+*/
 function cartTotal(productQuantity , priceItem){
     totalProduct += productQuantity
     totalPrice += priceItem
@@ -14,16 +17,20 @@ function cartTotal(productQuantity , priceItem){
     document.getElementById("totalPrice").innerText = totalPrice
     }
 
-// Vérifier si le panier est vide
+/*
+Vérifier si le panier est vide
+*/
 if(cartLocal === null || cartLocal.length === 0) {
     document.querySelector('h1').innerText = "VOTRE PANIER EST VIDE"
     alert("Le panier est vide")
 } 
-
-// Si le panier n'est pas vide
+/*
+Si le panier n'est pas vide
+*/
 else {
-// ---------- Création, insertion et modificataion des éléments dans la page panier ----------------- 
-
+/*
+Création, insertion et modificataion des éléments dans la page panier 
+*/
     cartLocal.forEach(item => {
         fetch(`http://localhost:3000/api/products/${item.id}`)
             .then(response => response.json())
@@ -38,7 +45,9 @@ else {
                 divImg.className = 'cart__item__img'
                 idItem.appendChild(divImg)
 
-                // Insertion de l'image
+                /*
+                Insertion de l'image
+                */
                 let img = document.createElement('img')
                 img.src = product.imageUrl
                 img.alt = product.altTxt
@@ -52,12 +61,16 @@ else {
                 divTitle.className = 'cart__item__content__titlePrice'
                 divContent.appendChild(divTitle)
                         
-                // Insertion du nom du produit
+                /*
+                Insertion du nom du produit
+                */
                 let h2 = document.createElement('h2')
                 h2.innerHTML = `${product.name} - ${item.color}`
                 divTitle.appendChild(h2)  
                 
-                // Insertion du prix du produit
+                /*
+                Insertion du prix du produit
+                */
                 let price = document.createElement('p')
                 let priceItem = item.quantity * product.price
                 price.innerHTML = `${priceItem} €`
@@ -75,7 +88,9 @@ else {
                 quantity.innerHTML = "Qté : "
                 divQuantity.appendChild(quantity)
                 
-                // Insertion de la quantité
+                /*
+                Insertion de la quantité
+                */
                 let inputQuantity = document.createElement('input')
                 inputQuantity.type = "number"
                 inputQuantity.className = "itemQuantity"
@@ -95,44 +110,40 @@ else {
                 pDelete.innerHTML = 'Supprimer'
                 divDelete.appendChild(pDelete)
                       
-                // Insertion de la quantité totale et du prix total
-                
+                /*
+                Insertion de la quantité totale et du prix total
+                */
                 cartTotal(productQuantity , priceItem)
 
-                // ------ changement de quantité d'un produit du panier ---
-
+                /* Changement de quantité d'un produit du panier
+                */
                 inputQuantity.addEventListener('change',(e)=> {
                     cartLocal.forEach (item => {
-                        // Récupération de l'élément parent à supprimer
+                        // Récupération de l'élément parent à modifier
                         let parent = e.target.closest('[data-id]')
-                        //   récupération de l'id du produit à supprimer
+                        //   récupération de l'id du produit à modifier
                         let idUpdate = parent.dataset.id
-                        
                         if(item.id === idUpdate) {
                             item.quantity = e.target.value
                         }
                     })
-                     
                     localStorage.setItem('cart', JSON.stringify(cartLocal))
                     location.reload()
                 })
-
-                // ------ suppression d'un élément du panier ------
-               
+                /* 
+                Suppression d'un élément du panier
+                */
                 pDelete.addEventListener('click',(e) => {  
                     cartLocal.forEach ( item => {
                         // Récupération de l'élément parent à supprimer
                         let parent = e.target.closest('[data-id]')
                         //   récupération de l'id du produit à supprimer
                         let idDelete = parent.dataset.id
-
                         // Suppression du produit du localStorage
                         const cartUpdate = cartLocal.filter((item) => item.id !== idDelete)
                         localStorage.setItem('cart', JSON.stringify(cartUpdate))
-                        
                         // Suppression du produit dans le DOM
                         parent.remove()
-                        
                         // Rafraîchissment de la page   
                         location.reload()
                     })    
@@ -144,17 +155,20 @@ else {
     })
 }
 
-// --- RECUPERATION ET VALIDATION DES DONNEES DU FORMULAIRE ---
+/*
+RECUPERATION ET VALIDATION DES DONNEES DU FORMULAIRE
+*/
 
-// Récupération du formulaire
-
+/*
+Récupération du formulaire
+*/
 let form = document.querySelector('.cart__order__form')
-
-// Fonction de validation des noms
+/*
+Fonction de validation des noms
+*/
 const validName = (inputName => {
     let nameRegExp = /[0-9]/
     let errorMsg = inputName.nextElementSibling
-
     if (inputName.value.match(nameRegExp)){
         errorMsg.innerHTML = "Le format n'est pas valide - Veuillez utiliser des lettres"    
         return false
@@ -166,13 +180,12 @@ const validName = (inputName => {
         return true
     }
  })
-
-//  Fonction de la validation de l'e-mail
-
- const validEmail = (inputEmail => {
+/*
+Fonction de la validation de l'e-mail
+*/
+const validEmail = (inputEmail => {
     let emailRegExp = new RegExp('^[a-zA-Z0-9.-_]+[@]{1}[a-zA-Z0-9.-_]+[.]{1}[a-z]{2,10}$', 'g')
     let errorEmail = document.getElementById('emailErrorMsg')
-
     if(emailRegExp.test(inputEmail.value)){
         errorEmail.innerHTML = " "
         return true
@@ -182,50 +195,52 @@ const validName = (inputName => {
         } else {  
         errorEmail.innerHTML = 'Email non valide'
         }
-
         return false
     }
 })
+/*
+Ecoute de la modification du prénom
+*/
+form.firstName.addEventListener('change', () => {
+    validName(this.firstName)
+})
+/*
+Ecoute de la modification du nom
+*/
+form.lastName.addEventListener('change', () => {
+    validName(this.lastName)
+})
+/*
+Ecoute de la modification de l'adresse
+*/
+form.address.addEventListener('change', () => {
+    if (form.address.value === "") {
+    document.getElementById('addressErrorMsg').innerHTML = "Merci de remplir ce champ"
+    } else {
+    document.getElementById('addressErrorMsg').innerHTML = " "
+    }
+})
+/*
+Ecoute de la modification du nom
+*/
+form.city.addEventListener('change', () => {
+    validName(this.city)
+})
+/*
+Ecoute de la modification de l'email
+*/
+form.email.addEventListener('change', () => {
+    validEmail(this.email)
+})
 
+/*
+Envoi des données à l'API
+*/
 form.addEventListener('submit', (e) => {
-
     e.preventDefault()
-    // Ecoute de la modification du prénom
-    form.firstName.addEventListener('change', () => {
-        validName(this.firstName)
-    })
-
-    // Ecoute de la modification du nom
-    form.lastName.addEventListener('change', () => {
-        validName(this.lastName)
-    })
-
-    // Ecoute de la modification de l'adresse
-    form.address.addEventListener('change', () => {
-        if (form.address.value === "") {
-        document.getElementById('addressErrorMsg').innerHTML = "Merci de remplir ce champ"
-        
-        } else {
-        document.getElementById('addressErrorMsg').innerHTML = " "
-
-        }
-    })
-
-    // Ecoute de la modification du nom
-    form.city.addEventListener('change', () => {
-        validName(this.city)
-    })
-
-    // Ecoute de la modification de l'email
-    form.email.addEventListener('change', () => {
-        validEmail(this.email)
-    })
-
-    //  Récupération des données du formulaire sous forme d'objet
-
-
-    document.getElementById('order').addEventListener('click', (e) => {
-
+    /*
+    Récupération des données du formulaire sous forme d'objet
+    */
         let contact = {
             firstName : document.getElementById('firstName').value,
             lastName : document.getElementById('lastName').value,
@@ -237,14 +252,13 @@ form.addEventListener('submit', (e) => {
         cartLocal.forEach(item =>{
             products.push(item.id)
         })
-
         const order = {
             contact,
             products,
         }
-        console.log(order)
-        
-        // Envoi des données de order à l'API
+        /*
+        Envoi des données de order à l'API
+        */
         fetch("http://localhost:3000/api/products/order",{
             method: 'POST',
             headers: {
@@ -254,11 +268,10 @@ form.addEventListener('submit', (e) => {
             body: JSON.stringify(order)
         })
         .then(response => response.json())
-        .then(order =>location.href = `./confirmation.html?id=${order.orderId}`)
-        .catch(error => alert("Erreur : " + error));
-
-    })
-      
+        .then(order => location.href = `./confirmation.html?id=${order.orderId}`)
+        
+        
+        .catch(error => alert("Erreur : " + error));        
 })
 
 
